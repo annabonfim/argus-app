@@ -3,7 +3,7 @@
 export const colors = {
   // Core (do logo)
   forest: '#142821',       // verde-floresta escuro — headers, texto principal, botões primários
-  fire: '#F36B1D',         // laranja chama — CTAs, status crítico, ícones de fogo
+  fire: '#C75B2C',         // terracota (laranja queimado) — accent de UI: CTAs, links, foco. Versão abafada da chama do logo
   cream: '#F8F8ED',        // off-white — background das telas de conteúdo, cards, inputs
 
   // Tons complementares (do próprio mockup do logo)
