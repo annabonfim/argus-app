@@ -6,12 +6,14 @@ import {
 } from 'react-native';
 import { colors, radius, spacing, typography } from '@/theme';
 
+type Variant = 'primary' | 'fire' | 'outline' | 'danger';
+
 interface ButtonProps {
   title: string;
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
-  variant?: 'primary' | 'fire';
+  variant?: Variant;
 }
 
 export function Button({
@@ -22,6 +24,7 @@ export function Button({
   variant = 'primary',
 }: ButtonProps) {
   const isDisabled = disabled || loading;
+  const isOutline = variant === 'outline';
 
   return (
     <Pressable
@@ -29,15 +32,17 @@ export function Button({
       disabled={isDisabled}
       style={({ pressed }) => [
         styles.base,
-        variant === 'fire' ? styles.fire : styles.primary,
+        styles[variant],
         isDisabled && styles.disabled,
         pressed && !isDisabled && styles.pressed,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={colors.cream} />
+        <ActivityIndicator color={isOutline ? colors.forest : colors.cream} />
       ) : (
-        <Text style={styles.label}>{title}</Text>
+        <Text style={[styles.label, isOutline && styles.labelOutline]}>
+          {title}
+        </Text>
       )}
     </Pressable>
   );
@@ -53,10 +58,19 @@ const styles = StyleSheet.create({
   },
   primary: { backgroundColor: colors.forest },
   fire: { backgroundColor: colors.fire },
+  danger: { backgroundColor: colors.danger },
+  outline: {
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: colors.forest,
+  },
   disabled: { opacity: 0.5 },
   pressed: { opacity: 0.85 },
   label: {
     ...typography.button,
     color: colors.cream,
+  },
+  labelOutline: {
+    color: colors.forest,
   },
 });
