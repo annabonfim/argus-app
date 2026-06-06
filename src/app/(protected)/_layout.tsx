@@ -1,22 +1,22 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '@/context/AuthContext';
 import { colors, fonts } from '@/theme';
 
-// Logout vive no header (ação de saída, secundária) em vez de competir como
-// botão primário no corpo da tela.
-function LogoutButton() {
-  const { signOut } = useAuth();
+// Perfil mora num avatar no topo (ação de baixa frequência), liberando um slot
+// da barra pro Mapa de Focos — que é o showcase do app. O logout vive dentro
+// da própria tela de Perfil.
+function ProfileButton() {
+  const router = useRouter();
   return (
     <Pressable
-      onPress={signOut}
+      onPress={() => router.push('/perfil')}
       hitSlop={8}
       style={{ marginRight: 16 }}
       accessibilityRole="button"
-      accessibilityLabel="Sair"
+      accessibilityLabel="Perfil"
     >
-      <Ionicons name="log-out-outline" size={24} color={colors.cream} />
+      <Ionicons name="person-circle-outline" size={28} color={colors.cream} />
     </Pressable>
   );
 }
@@ -29,7 +29,7 @@ export default function AppLayout() {
         headerTintColor: colors.cream,
         headerTitleAlign: 'center',
         headerTitleStyle: { fontFamily: fonts.headingBold },
-        headerRight: () => <LogoutButton />,
+        headerRight: () => <ProfileButton />,
         tabBarActiveTintColor: colors.fire,
         tabBarInactiveTintColor: colors.olive,
         tabBarStyle: {
@@ -80,12 +80,13 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
-        name="perfil"
+        name="focos"
         options={{
-          title: 'Perfil',
+          title: 'Mapa de calor',
+          tabBarLabel: 'Mapa',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
-              name={focused ? 'person' : 'person-outline'}
+              name={focused ? 'map' : 'map-outline'}
               size={size}
               color={color}
             />
@@ -93,8 +94,8 @@ export default function AppLayout() {
         }}
       />
 
-      {/* Telas acessíveis pelos cards do Início — fora do tab bar (href null). */}
-      <Tabs.Screen name="focos" options={{ href: null, title: 'Mapa de calor' }} />
+      {/* Fora da barra: Perfil (avatar no topo) + Brigadas/Recursos (cards do Início). */}
+      <Tabs.Screen name="perfil" options={{ href: null, title: 'Perfil' }} />
       <Tabs.Screen name="brigadas" options={{ href: null, title: 'Brigadas' }} />
       <Tabs.Screen name="recursos" options={{ href: null, title: 'Recursos' }} />
     </Tabs>

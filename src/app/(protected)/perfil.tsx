@@ -25,7 +25,7 @@ const RELACAO_OPCOES: SelectOption<string>[] = RELACOES_EMERGENCIA.map((r) => ({
 }));
 
 export default function PerfilScreen() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, signOut } = useAuth();
 
   const [nome, setNome] = useState(user?.nome ?? '');
   const [telefone, setTelefone] = useState(maskTelefone(user?.telefone ?? ''));
@@ -144,6 +144,11 @@ export default function PerfilScreen() {
         {error && <Text style={styles.error}>{error}</Text>}
 
         <Button title="Salvar alterações" onPress={handleSave} loading={saving} />
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Conta</Text>
+        </View>
+        <Button title="Sair" variant="outline" onPress={signOut} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

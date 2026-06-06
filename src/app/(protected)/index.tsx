@@ -103,12 +103,6 @@ export default function HomeScreen() {
       <Text style={styles.sectionTitle}>Acesso rápido</Text>
       <View style={styles.cards}>
         <NavCard
-          icon="map-outline"
-          title="Mapa de Focos"
-          subtitle="Focos via satélite"
-          href="/focos"
-        />
-        <NavCard
           icon="people-outline"
           title="Brigadas"
           subtitle="Equipes e brigadistas"
@@ -119,12 +113,6 @@ export default function HomeScreen() {
           title="Recursos"
           subtitle="Veículos e equipamentos"
           href="/recursos"
-        />
-        <NavCard
-          icon="information-circle-outline"
-          title="Sobre"
-          subtitle="Versão do app"
-          href="/sobre"
         />
       </View>
     </ScrollView>
