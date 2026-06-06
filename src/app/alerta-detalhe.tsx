@@ -87,10 +87,17 @@ export default function AlertaDetalheScreen() {
       alertaId: string;
       latitude?: string;
       longitude?: string;
+      descricao?: string;
     } = { alertaId: String(alertaId) };
     if (foco) {
       params.latitude = String(foco.latitude);
       params.longitude = String(foco.longitude);
+    }
+    // Pré-preenche a descrição com o contexto do alerta (o brigadista edita).
+    if (alerta) {
+      params.descricao = [alerta.titulo, alerta.recomendacaoOperacional]
+        .filter(Boolean)
+        .join(' — ');
     }
     router.push({ pathname: '/ocorrencia-form', params });
   }
@@ -182,7 +189,12 @@ export default function AlertaDetalheScreen() {
           </View>
 
           {podeCriar && (
-            <Button title="Criar ocorrência" onPress={handleCriarOcorrencia} />
+            <Button
+              title="Gerar ocorrência"
+              icon="add-circle-outline"
+              variant="fire"
+              onPress={handleCriarOcorrencia}
+            />
           )}
         </ScrollView>
       )}

@@ -3,7 +3,9 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing, typography } from '@/theme';
 
 type Variant = 'primary' | 'fire' | 'outline' | 'danger';
@@ -14,6 +16,7 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   variant?: Variant;
+  icon?: keyof typeof Ionicons.glyphMap;
 }
 
 export function Button({
@@ -22,6 +25,7 @@ export function Button({
   loading = false,
   disabled = false,
   variant = 'primary',
+  icon,
 }: ButtonProps) {
   const isDisabled = disabled || loading;
   const isOutline = variant === 'outline';
@@ -40,9 +44,18 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={isOutline ? colors.forest : colors.cream} />
       ) : (
-        <Text style={[styles.label, isOutline && styles.labelOutline]}>
-          {title}
-        </Text>
+        <View style={styles.row}>
+          {icon && (
+            <Ionicons
+              name={icon}
+              size={20}
+              color={isOutline ? colors.forest : colors.cream}
+            />
+          )}
+          <Text style={[styles.label, isOutline && styles.labelOutline]}>
+            {title}
+          </Text>
+        </View>
       )}
     </Pressable>
   );
@@ -55,6 +68,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.lg,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   primary: { backgroundColor: colors.forest },
   fire: { backgroundColor: colors.fire },
