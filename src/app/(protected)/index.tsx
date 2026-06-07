@@ -10,6 +10,8 @@ import { PERFIL_LABEL } from '@/lib/labels';
 import { StatusOcorrencia } from '@/types/domain';
 import { colors, fonts, radius, spacing, typography } from '@/theme';
 
+const POLL_INTERVAL_MS = 15_000;
+
 // Card de indicador (número grande + rótulo). null vira "—" enquanto carrega
 // ou se a chamada falhar.
 function Kpi({
@@ -71,6 +73,9 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
+      // Mantém os KPIs atualizados em segundo plano enquanto a tela está aberta.
+      const id = setInterval(load, POLL_INTERVAL_MS);
+      return () => clearInterval(id);
     }, [load]),
   );
 

@@ -8,6 +8,7 @@ interface ResourceListState<T> {
   refreshing: boolean; // pull-to-refresh
   error: string | null;
   refresh: () => void;
+  reloadSilent: () => void; // recarga em segundo plano (polling), sem spinner
 }
 
 // Carrega uma lista da API e recarrega sempre que a tela ganha foco (cobre o
@@ -20,24 +21,21 @@ export function useResourceList<T>(
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 'initial' mostra o spinner de tela; 'refresh' o de pull-to-refresh;
+  // 'silent' atualiza em segundo plano (polling) sem spinner e sem derrubar a
+  // tela numa falha passageira de rede.
   const load = useCallback(
-    async (isRefresh: boolean) => {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
-      setError(null);
+    async (mode: 'initial' | 'refresh' | 'silent') => {
+      if (mode === 'refresh') setRefreshing(true);
+      else if (mode === 'initial') setLoading(true);
+      if (mode !== 'silent') setError(null);
       try {
         setData(await fetcher());
       } catch (err) {
-        setError(getErrorMessage(err));
+        if (mode !== 'silent') setError(getErrorMessage(err));
       } finally {
-        if (isRefresh) {
-          setRefreshing(false);
-        } else {
-          setLoading(false);
-        }
+        if (mode === 'refresh') setRefreshing(false);
+        else if (mode === 'initial') setLoading(false);
       }
     },
     [fetcher],
@@ -45,9 +43,16 @@ export function useResourceList<T>(
 
   useFocusEffect(
     useCallback(() => {
-      load(false);
+      load('initial');
     }, [load]),
   );
 
-  return { data, loading, refreshing, error, refresh: () => load(true) };
+  return {
+    data,
+    loading,
+    refreshing,
+    error,
+    refresh: () => load('refresh'),
+    reloadSilent: () => load('silent'),
+  };
 }

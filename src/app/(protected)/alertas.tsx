@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -9,8 +9,9 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
 import { Badge } from '@/components/Badge';
 import { ScreenPlaceholder } from '@/components/ScreenPlaceholder';
 import { useResourceList } from '@/hooks/useResourceList';
@@ -31,11 +32,47 @@ const FILTROS: { key: Filtro; label: string; color: string }[] = [
   { key: 'BAIXO', ...NIVEL_ALERTA_THEME.BAIXO },
 ];
 
+const POLL_INTERVAL_MS = 15_000;
+
 export default function AlertasScreen() {
   const router = useRouter();
-  const { data, loading, refreshing, error, refresh } =
+  const { data, loading, refreshing, error, refresh, reloadSilent } =
     useResourceList(listAlertas);
   const [filtro, setFiltro] = useState<Filtro>('TODOS');
+
+  // Polling: atualiza em segundo plano a cada 30s enquanto a tela está visível.
+  // useFocusEffect pausa o intervalo em background (não queima bateria/cota).
+  useFocusEffect(
+    useCallback(() => {
+      const id = setInterval(reloadSilent, POLL_INTERVAL_MS);
+      return () => clearInterval(id);
+    }, [reloadSilent]),
+  );
+
+  // Detecta alertas novos entre um poll e outro e avisa com um toast (sensação
+  // de tempo real). A primeira carga só registra os ids, sem toast.
+  const jaInicializou = useRef(false);
+  const idsConhecidos = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    if (loading) return;
+    const conhecidos = idsConhecidos.current;
+    if (!jaInicializou.current) {
+      data.forEach((a) => conhecidos.add(a.id));
+      jaInicializou.current = true;
+      return;
+    }
+    data.forEach((a) => {
+      if (conhecidos.has(a.id)) return;
+      conhecidos.add(a.id);
+      if (a.nivel === 'CRITICO' || a.nivel === 'ALTO') {
+        Toast.show({
+          type: 'error',
+          text1: `🔴 Novo alerta ${NIVEL_ALERTA_THEME[a.nivel].label.toLowerCase()}`,
+          text2: a.titulo,
+        });
+      }
+    });
+  }, [data, loading]);
 
   if (loading) {
     return (
