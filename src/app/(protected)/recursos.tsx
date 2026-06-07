@@ -1,11 +1,4 @@
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {ActivityIndicator,FlatList,RefreshControl,StyleSheet,Text,View} from 'react-native';
 import { Badge } from '@/components/Badge';
 import { ScreenPlaceholder } from '@/components/ScreenPlaceholder';
 import { useResourceList } from '@/hooks/useResourceList';

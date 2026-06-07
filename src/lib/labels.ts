@@ -1,10 +1,4 @@
-import {
-  PerfilUsuario,
-  StatusOcorrencia,
-  TipoRecurso,
-  type NivelAlerta,
-  type StatusAlerta,
-} from '@/types/domain';
+import {PerfilUsuario,StatusOcorrencia,TipoRecurso,type NivelAlerta,type StatusAlerta} from '@/types/domain';
 import { colors } from '@/theme';
 
 // Tema por nível de alerta: rótulo + cor (da paleta existente). Da urgência

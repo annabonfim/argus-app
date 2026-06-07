@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import {
-  FlatList,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {FlatList,Modal,Pressable,StyleSheet,Text,View} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, fonts, radius, spacing, typography } from '@/theme';
 

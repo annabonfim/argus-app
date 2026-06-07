@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, fonts, radius, spacing, typography } from '@/theme';
+import { colors, radius, spacing, typography } from '@/theme';
 
 interface FabProps {
   icon?: keyof typeof Ionicons.glyphMap;

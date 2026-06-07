@@ -9,6 +9,14 @@
   Disciplina: <b>Mobile Application Development</b>
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Expo-SDK%2056-000020?logo=expo&logoColor=white" alt="Expo SDK 56" />
+  <img src="https://img.shields.io/badge/React%20Native-0.85-61DAFB?logo=react&logoColor=black" alt="React Native 0.85" />
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Expo%20Router-tipado-1B1F23?logo=expo&logoColor=white" alt="Expo Router" />
+  <img src="https://img.shields.io/badge/Axios-API%20.NET-5A29E4?logo=axios&logoColor=white" alt="Axios" />
+</p>
+
 ---
 
 # Argus Mobile 🔥
@@ -236,9 +244,9 @@ a UI compartilhada fica em `components/`.
 
 ## 🔗 Repositórios relacionados
 
-- ⚙️ **Operações (.NET 9 + Oracle):** `<link do repo>` <!-- preencher -->
-- 🛰️ **Detecção (Java + Spring + IA):** `<link do repo>` <!-- preencher -->
-  - API publicada: `https://argus-intelligence-api-abe6g6facyh4fgfm.eastus-01.azurewebsites.net`
+- ⚙️ **Operações — .NET 9 + Oracle:** [annabonfim/argus-operations-dotnet](https://github.com/annabonfim/argus-operations-dotnet)
+- 🛰️ **Detecção — Java + Spring + IA:** [alanerochaa/argus-intelligence-api](https://github.com/alanerochaa/argus-intelligence-api)
+  - API publicada: [argus-intelligence-api (Azure)](https://argus-intelligence-api-abe6g6facyh4fgfm.eastus-01.azurewebsites.net)
 
 ## 📹 Vídeo demonstração
 
@@ -246,8 +254,8 @@ a UI compartilhada fica em `components/`.
 
 ## 👩‍💻 Integrantes
 
-| RM | Nome |
-|---|---|
-| 559561 | Anna Beatriz de Araujo Bonfim |
-| 560944 | Maria Eduarda Araujo Penas |
-| 561052 | Alane Rocha da Silva |
+| Nome | RM | Responsabilidades |
+|---|---|---|
+| Anna Beatriz de Araujo Bonfim | 559561 | Mobile (este app) · .NET (Operations API) · Compliance/TOGAF |
+| Alane Rocha da Silva | 561052 | Java Advanced (Intelligence API + RabbitMQ) · PL/SQL · Compliance |
+| Maria Eduarda Araujo Penas | 560944 | DevOps & Cloud (Azure Pipelines) · Disruptive Architectures (IoT) |

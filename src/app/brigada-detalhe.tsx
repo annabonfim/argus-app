@@ -1,17 +1,6 @@
 import { useCallback, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import {
-  useFocusEffect,
-  useLocalSearchParams,
-  useRouter,
-} from 'expo-router';
+import {ActivityIndicator,Pressable,ScrollView,StyleSheet,Text,View} from 'react-native';
+import {useFocusEffect,useLocalSearchParams,useRouter} from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -22,11 +11,7 @@ import { listBrigadistas } from '@/api/brigadistas';
 import { getErrorMessage } from '@/api/errors';
 import { formatTelefone } from '@/lib/format';
 import { useAuth } from '@/context/AuthContext';
-import {
-  PerfilUsuario,
-  type Brigada,
-  type Brigadista,
-} from '@/types/domain';
+import {PerfilUsuario,type Brigada,type Brigadista,} from '@/types/domain';
 import { colors, fonts, radius, spacing, typography } from '@/theme';
 
 export default function BrigadaDetalheScreen() {

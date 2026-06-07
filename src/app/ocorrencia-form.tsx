@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Alert,Pressable,ScrollView,StyleSheet,Text,View,} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,12 +8,7 @@ import Toast from 'react-native-toast-message';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/TextField';
 import { Select, type SelectOption } from '@/components/Select';
-import {
-  createOcorrencia,
-  deleteOcorrencia,
-  getOcorrencia,
-  updateOcorrencia,
-} from '@/api/ocorrencias';
+import {createOcorrencia,deleteOcorrencia,getOcorrencia,updateOcorrencia} from '@/api/ocorrencias';
 import { listBrigadistas } from '@/api/brigadistas';
 import { listBrigadas } from '@/api/brigadas';
 import { criarOcorrenciaDeAlerta } from '@/api/alertas';

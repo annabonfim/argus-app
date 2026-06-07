@@ -1,20 +1,8 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import {createContext,useCallback,useContext,useEffect,useState,type ReactNode} from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { api } from '@/api/client';
 import * as authApi from '@/api/auth';
-import type {
-  AuthResponse,
-  LoginRequest,
-  RegisterRequest,
-  Usuario,
-} from '@/types/domain';
+import type {AuthResponse,LoginRequest,RegisterRequest,Usuario} from '@/types/domain';
 
 const TOKEN_KEY = 'argus.token';
 const USER_KEY = 'argus.user';

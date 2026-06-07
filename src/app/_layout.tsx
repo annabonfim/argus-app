@@ -1,16 +1,8 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import {
-  Oswald_600SemiBold,
-  Oswald_700Bold,
-} from '@expo-google-fonts/oswald';
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  useFonts,
-} from '@expo-google-fonts/inter';
+import {Oswald_600SemiBold,Oswald_700Bold,} from '@expo-google-fonts/oswald';
+import {Inter_400Regular,Inter_500Medium,Inter_600SemiBold,useFonts,} from '@expo-google-fonts/inter';
 import Toast from 'react-native-toast-message';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { colors } from '@/theme';

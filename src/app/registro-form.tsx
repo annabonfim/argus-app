@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Alert,Pressable,ScrollView,StyleSheet,Text,View} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,12 +9,7 @@ import { Button } from '@/components/Button';
 import { TextField } from '@/components/TextField';
 import { Select, type SelectOption } from '@/components/Select';
 import { listOcorrencias } from '@/api/ocorrencias';
-import {
-  createRegistro,
-  deleteRegistro,
-  getRegistro,
-  updateRegistro,
-} from '@/api/registros';
+import {createRegistro,deleteRegistro,getRegistro,updateRegistro,} from '@/api/registros';
 import { getErrorMessage } from '@/api/errors';
 import { getCurrentCoords } from '@/lib/location';
 import { colors, fonts, spacing, typography } from '@/theme';

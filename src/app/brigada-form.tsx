@@ -1,13 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from 'react-native';
+import {Alert,Pressable,ScrollView,StyleSheet,Switch,Text,View,} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,12 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import Toast from 'react-native-toast-message';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/TextField';
-import {
-  createBrigada,
-  deleteBrigada,
-  getBrigada,
-  updateBrigada,
-} from '@/api/brigadas';
+import {createBrigada,deleteBrigada,getBrigada,updateBrigada} from '@/api/brigadas';
 import { getErrorMessage } from '@/api/errors';
 import { maskTelefone } from '@/lib/format';
 import { colors, fonts, spacing, typography } from '@/theme';

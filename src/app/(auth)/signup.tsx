@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {KeyboardAvoidingView,Platform,ScrollView,StyleSheet,Text,View} from 'react-native';
 import { Link } from 'expo-router';
 import { Button } from '@/components/Button';
 import { Logo } from '@/components/Logo';

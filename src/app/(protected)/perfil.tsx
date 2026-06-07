@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {KeyboardAvoidingView,Platform,ScrollView,StyleSheet,Text,View} from 'react-native';
 import Toast from 'react-native-toast-message';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';

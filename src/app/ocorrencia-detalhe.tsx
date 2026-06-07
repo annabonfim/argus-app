@@ -1,17 +1,6 @@
 import { useCallback, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import {
-  useFocusEffect,
-  useLocalSearchParams,
-  useRouter,
-} from 'expo-router';
+import {ActivityIndicator,Pressable,ScrollView,StyleSheet,Text,View} from 'react-native';
+import {useFocusEffect,useLocalSearchParams,useRouter} from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -28,12 +17,7 @@ import { statusOcorrenciaTheme } from '@/lib/labels';
 import { formatCoords, formatDateTime } from '@/lib/format';
 import { getEndereco } from '@/lib/location';
 import { abrirMapa } from '@/lib/maps';
-import {
-  StatusOcorrencia,
-  type Brigadista,
-  type Ocorrencia,
-  type RegistroCampo,
-} from '@/types/domain';
+import {StatusOcorrencia,type Brigadista,type Ocorrencia,type RegistroCampo} from '@/types/domain';
 import { colors, fonts, radius, spacing, typography } from '@/theme';
 
 const STATUS_OPTIONS = [

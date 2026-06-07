@@ -1,17 +1,6 @@
 import { useCallback, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import {
-  useFocusEffect,
-  useLocalSearchParams,
-  useRouter,
-} from 'expo-router';
+import {ActivityIndicator,Pressable,ScrollView,StyleSheet,Text,View,} from 'react-native';
+import {useFocusEffect,useLocalSearchParams,useRouter} from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -24,11 +13,7 @@ import { NIVEL_ALERTA_THEME, STATUS_ALERTA_LABEL } from '@/lib/labels';
 import { formatCoords, formatDateTime } from '@/lib/format';
 import { abrirMapa } from '@/lib/maps';
 import { useAuth } from '@/context/AuthContext';
-import {
-  PerfilUsuario,
-  type Alerta,
-  type FocoCalor,
-} from '@/types/domain';
+import {PerfilUsuario,type Alerta,type FocoCalor,} from '@/types/domain';
 import { colors, fonts, radius, spacing, typography } from '@/theme';
 
 function Info({ label, value }: { label: string; value: string }) {

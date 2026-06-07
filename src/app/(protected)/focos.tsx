@@ -1,12 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {ActivityIndicator,Pressable,StyleSheet,Text,TextInput,View} from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import MapView, { Callout, Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
