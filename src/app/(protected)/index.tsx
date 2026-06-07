@@ -7,7 +7,7 @@ import { listAlertas } from '@/api/alertas';
 import { listOcorrencias } from '@/api/ocorrencias';
 import { listBrigadistas } from '@/api/brigadistas';
 import { PERFIL_LABEL } from '@/lib/labels';
-import { StatusOcorrencia } from '@/types/domain';
+import { PerfilUsuario, StatusOcorrencia } from '@/types/domain';
 import { colors, fonts, radius, spacing, typography } from '@/theme';
 
 const POLL_INTERVAL_MS = 15_000;
@@ -119,6 +119,14 @@ export default function HomeScreen() {
           subtitle="Veículos e equipamentos"
           href="/recursos"
         />
+        {user?.perfil === PerfilUsuario.Admin && (
+          <NavCard
+            icon="people-circle-outline"
+            title="Usuários"
+            subtitle="Gestão administrativa"
+            href="/usuarios"
+          />
+        )}
       </View>
     </ScrollView>
   );

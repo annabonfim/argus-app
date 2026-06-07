@@ -21,6 +21,22 @@ export interface Usuario {
   perfil: PerfilUsuario;
 }
 
+// Usuário completo da listagem administrativa (GET /api/usuarios, só Admin).
+// Shape mais rico que o Usuario logado: inclui status e datas.
+export interface UsuarioDetalhe {
+  id: number;
+  nome: string;
+  email: string;
+  telefone: string;
+  nomeEmergencia: string | null;
+  telefoneEmergencia: string | null;
+  relacaoEmergencia: string | null;
+  perfil: PerfilUsuario;
+  ativo: boolean;
+  dataCriacao: string; // ISO 8601
+  ultimoLogin: string | null;
+}
+
 // Resposta de POST /api/auth/login
 export interface AuthResponse {
   token: string;
