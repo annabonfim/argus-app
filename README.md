@@ -1,56 +1,253 @@
-# Welcome to your Expo app 👋
+<p align="center">
+  <img src="assets/images/logo-horizontal.png" alt="Argus" width="420" />
+</p>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<p align="center"><i>O vigia de cem olhos — sistema operacional de combate a incêndios florestais.</i></p>
 
-## Get started
+<p align="center">
+  <b>Global Solution 2026/1 · FIAP</b> · 2º ano de Análise e Desenvolvimento de Sistemas<br/>
+  Disciplina: <b>Mobile Application Development</b>
+</p>
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+# Argus Mobile 🔥
 
-2. Start the app
+App **React Native + Expo** que é a **ferramenta de campo do brigadista** dentro do
+ecossistema Argus — uma solução de ponta a ponta que conecta a **economia espacial**
+(dados de satélite) ao combate a **incêndios florestais** aqui na Terra.
 
-   ```bash
-   npx expo start
-   ```
+O Argus é composto por **três camadas**, cada uma sendo um domínio próprio (e uma
+entrega da GS): a **detecção** (Java, lê o satélite e gera alertas), as **operações**
+(.NET, coordena a resposta) e o **campo** (este app, onde o brigadista age).
 
-In the output, you'll find options to open the app in a
+## 🛰️ A solução (Global Solution 2026/1)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+> *"O espaço é a nova fronteira."* — Satélites monitoram o clima e evitam desastres.
+> O Argus usa os dados abertos de satélite da **NASA FIRMS** para detectar focos de
+> calor, priorizá-los por risco e coordenar a resposta de brigadas florestais.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+| Camada | Stack | Papel |
+|---|---|---|
+| 🛰️ **Detecção** | Java + Spring + IA | Ingere dados da **NASA FIRMS**, filtra os focos de calor, calcula score de risco e gera **alertas** com recomendação operacional. |
+| ⚙️ **Operações** | .NET 9 + Oracle | Coordena a resposta humana: brigadas, brigadistas, recursos, ocorrências e registros de campo. Expõe a **API REST** e faz **proxy** dos alertas/focos do Java. |
+| 📱 **Campo** *(este repo)* | React Native + Expo | O brigadista em campo: tria alertas, promove ocorrências, atualiza status, registra ações com GPS e gerencia a equipe. |
 
-## Get a fresh project
+**ODS atendidos:** 13 (Ação climática), 15 (Vida terrestre), 11 (Cidades sustentáveis), 9 (Inovação).
 
-When you're ready, run:
+## 🎯 Para o avaliador — em 4 passos
 
-```bash
-npm run reset-project
+| Passo | O que fazer |
+|---|---|
+| 1️⃣ | Abrir o app (APK no Firebase App Distribution ou rodar localmente — ver [Como executar](#-como-executar)) |
+| 2️⃣ | Logar como **`admin@argus.com` / `Admin@123`** |
+| 3️⃣ | **Alertas** → filtrar por **Crítico** → abrir um alerta → **"+ Gerar ocorrência"** → preencher → criar |
+| 4️⃣ | **Mapa** → ver os focos do satélite, dar zoom, buscar por região (ex.: "Pantanal") |
+
+## 🏗️ Arquitetura
+
+```mermaid
+flowchart LR
+    SAT["🛰️ NASA FIRMS<br/>satélite"]
+    JAVA["Detecção<br/>Java + Spring + IA<br/>gera focos + alertas por risco"]
+    NET["Operações<br/>.NET 9 + Oracle<br/>coordena a resposta · proxy do Java"]
+    APP["📱 Mobile · este repo<br/>React Native + Expo<br/>ferramenta do brigadista"]
+
+    SAT -->|focos de calor| JAVA
+    JAVA -->|alertas + focos| NET
+    NET <-->|REST + JWT| APP
+
+    style APP fill:#142821,stroke:#C75B2C,stroke-width:2px,color:#F8F8ED
+    style NET fill:#FBFAF1,stroke:#6A7044,color:#142821
+    style JAVA fill:#FBFAF1,stroke:#6A7044,color:#142821
+    style SAT fill:#FBFAF1,stroke:#6A7044,color:#142821
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+O app mobile tem **uma única origem de dados (a API .NET)**. Quem conversa com o Java é
+a .NET, que repassa focos e alertas. Isso mantém o cliente simples e desacoplado da
+camada de inteligência.
 
-### Other setup steps
+## 🔄 Do satélite à ação (ciclo de vida)
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```mermaid
+flowchart TD
+    FOCO["🔥 Foco de calor<br/>detectado pelo satélite"]
+    ALERTA["⚠️ Alerta<br/>Java gera, automático<br/>nível + score + recomendação"]
+    TRIAGEM{"Coordenador<br/>avalia o alerta"}
+    IGNORA["🚫 Não vira ocorrência<br/>(queimada legal, risco baixo…)"]
+    OCORR["📋 Ocorrência<br/>resposta operacional<br/>brigada + brigadista"]
+    REG["📝 Registros de campo<br/>o brigadista documenta a ação"]
+    FIM["✅ Ocorrência encerrada"]
 
-## Learn more
+    FOCO --> ALERTA --> TRIAGEM
+    TRIAGEM -->|"promove · + Gerar ocorrência"| OCORR
+    TRIAGEM -->|"descarta"| IGNORA
+    OCORR --> REG --> FIM
 
-To learn more about developing your project with Expo, look at the following resources:
+    style ALERTA fill:#FBFAF1,stroke:#C75B2C,color:#142821
+    style TRIAGEM fill:#FBFAF1,stroke:#6A7044,color:#142821
+    style OCORR fill:#142821,stroke:#C75B2C,stroke-width:2px,color:#F8F8ED
+    style FOCO fill:#FBFAF1,stroke:#6A7044,color:#142821
+    style REG fill:#FBFAF1,stroke:#6A7044,color:#142821
+    style FIM fill:#FBFAF1,stroke:#5C8C3A,color:#142821
+    style IGNORA fill:#FBFAF1,stroke:#C0392B,color:#142821
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+**Detecção é automática, resposta é humana:** o Java alerta, mas é o coordenador que
+decide agir. **Nem todo alerta vira ocorrência** — só quando vira, a brigada responde e
+documenta tudo em registros de campo até o encerramento.
 
-## Join the community
+## 🧠 Decisões de design
 
-Join our community of developers creating universal apps.
+| Decisão | Por quê |
+|---|---|
+| **App fala só com a .NET** (não chama o Java direto) | Uma origem só, cliente desacoplado; a .NET é o *backend-for-frontend* que agrega as duas APIs. |
+| **Alerta ≠ Ocorrência** | Detecção é **automática** (Java alerta); resposta é **humana** — o coordenador *promove* o alerta a ocorrência. Nem todo alerta vira ação (queimada legal, risco baixo, falso positivo). |
+| **Alertas por *polling* (15s)** | Alternativa pragmática ao push/FCM: o app atualiza em segundo plano enquanto a tela está visível e dá um **toast** quando chega um alerta crítico/alto. Pausa em background pra não gastar bateria/cota. |
+| **Brigada → Brigadista em cascata** | Integridade: o responsável tem que pertencer à brigada designada. O dropdown de brigadista só mostra membros da brigada escolhida. |
+| **Autorização por papel** | O brigadista vê/atualiza; criar/excluir e promover são de Admin/Coordenador — escondido no app **e** validado por `403` no backend. |
+| **Google Maps key via `.env`** | Mantém a chave **fora do repositório** (`app.config.js` injeta no build). |
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 👥 Perfis de usuário
+
+| Perfil | Acesso |
+|---|---|
+| **Admin** | Tudo: gerencia usuários, brigadas, brigadistas, recursos; cria/exclui ocorrências; promove alertas. |
+| **Coordenador** | Coordena a operação: cria ocorrências, promove alertas, gerencia equipe. |
+| **Brigadista** | Em campo: vê alertas/ocorrências, atualiza status e registra ações nas ocorrências sob sua responsabilidade. |
+
+## 📱 Telas (17 no total)
+
+**Públicas (autenticação)**
+- **Login** — autenticação JWT real
+- **Cadastro** — signup com código de convite (`ARGUS-2026`)
+- **Sobre o app** — versão, build e hash do commit *(acessível pelo login)*
+
+**Início e satélite**
+- **Início** — indicadores (alertas críticos, ocorrências abertas, brigadistas ativos) + atalhos
+- **Mapa de focos** — focos do FIRMS no mapa, coloridos por intensidade (FRP), com zoom e busca por região
+- **Alertas** + **Detalhe do alerta** — lista com filtro por criticidade; detalhe com recomendação e botão "Gerar ocorrência"
+
+**Operações (CRUD)**
+- **Ocorrências** + **Detalhe** + **Formulário** — CRUD completo
+- **Formulário de registro de campo** — registros aninhados na ocorrência
+- **Brigadas** + **Detalhe** + **Formulário** — gestão de equipes
+- **Formulário de brigadista** — cadastro de membros
+- **Recursos** — veículos e equipamentos
+
+**Conta**
+- **Perfil** — edição self-service dos próprios dados + logout
+
+## 🔑 Credenciais de teste
+
+| Perfil | E-mail | Senha |
+|---|---|---|
+| Admin | `admin@argus.com` | `Admin@123` |
+| Brigadista | `brig@argus.com` | `Brig@123` |
+
+Código de convite para cadastro: **`ARGUS-2026`**
+
+## 🛠️ Tecnologias
+
+| Categoria | Tecnologia |
+|---|---|
+| Framework | **Expo SDK 56** · React Native 0.85 · React 19 |
+| Linguagem | **TypeScript** (strict) |
+| Navegação | **Expo Router** (file-based: tabs + stack + modais, rotas tipadas) |
+| HTTP | **Axios** (interceptor de Bearer + tratamento de 401) |
+| Auth/sessão | **expo-secure-store** (persistência do token JWT) |
+| Mapa | **react-native-maps** (Google Maps) + geocoding via Nominatim |
+| Localização | **expo-location** (GPS) |
+| UI | **@expo/vector-icons** (Ionicons) · fontes **Oswald + Inter** |
+| Datas / feedback | **date-fns** · **react-native-toast-message** |
+
+## ✅ CRUD via API (.NET)
+
+Operações de **Create, Read, Update e Delete** consumindo a API .NET com Axios — os
+dados são sempre manipulados via API, nunca apenas no dispositivo.
+
+| Entidade | C | R | U | D | Quem |
+|---|:-:|:-:|:-:|:-:|---|
+| **Ocorrências** | ✅ | ✅ | ✅ | ✅ | Coordenação cria/exclui; brigadista atualiza |
+| **Registros de campo** | ✅ | ✅ | — | — | Brigadista (aninhado na ocorrência) |
+| **Brigadas** | ✅ | ✅ | ✅ | ✅ | Admin/Coordenador |
+| **Brigadistas** | ✅ | ✅ | ✅ | — | Admin/Coordenador |
+| **Perfil** | — | ✅ | ✅ | — | O próprio usuário |
+| **Alertas / Focos** | — | ✅ | — | — | Leitura (vindos do Java) + promoção a ocorrência |
+| **Recursos** | — | ✅ | — | — | Leitura |
+
+Feedback visual em tudo: **loaders**, **toasts** de sucesso/erro e mensagens
+amigáveis extraídas do `ProblemDetails` do backend.
+
+## 🚀 Como executar
+
+### Pré-requisitos
+- Node 20+ e `npx`
+- A **API .NET** (Argus Operations) rodando — local ou na nuvem
+- Um **development build** (o app **não roda no Expo Go**, por causa do `react-native-maps`)
+- No Android, uma **Google Maps API key** (Maps SDK for Android)
+
+### Passos
+```bash
+npm install
+
+# 1. Google Maps key — copie o modelo e preencha:
+cp .env.example .env
+# edite .env:  GOOGLE_MAPS_API_KEY=sua_chave_aqui
+
+# 2. URL da API (opcional):
+#    iOS sim → localhost:5215 · Android emu → 10.0.2.2:5215 (padrão).
+#    Para device físico / nuvem, defina:
+export EXPO_PUBLIC_API_URL="https://sua-api-na-nuvem"
+
+# 3. Dev build:
+npx expo run:android   # ou run:ios
+```
+
+## 📂 Estrutura do projeto
+
+```
+src/
+├── api/            # cliente axios + um serviço por recurso
+│   ├── client.ts        # baseURL + interceptors (Bearer, 401→logout)
+│   ├── auth.ts          # login, signup, perfil
+│   ├── alertas.ts       # listar/obter alerta + promover a ocorrência
+│   ├── ocorrencias.ts   # CRUD de ocorrências
+│   ├── registros.ts     # registros de campo
+│   ├── brigadas.ts · brigadistas.ts · recursos.ts · focos.ts
+│   └── errors.ts        # getErrorMessage (ProblemDetails → texto amigável)
+├── app/            # rotas (Expo Router)
+│   ├── (auth)/          # login, signup
+│   ├── (protected)/     # tabs: início, alertas, ocorrências, perfil, mapa…
+│   ├── *-detalhe.tsx    # telas de detalhe
+│   ├── *-form.tsx       # formulários de CRUD
+│   └── sobre.tsx
+├── components/     # UI reutilizável (Button, TextField, Select, Badge, Fab…)
+├── context/        # AuthContext — estado global de sessão
+├── hooks/          # useResourceList — loading/erro/refresh de listas
+├── lib/            # formatação, máscaras, geolocalização, mapas, labels
+├── theme/          # paleta de cores, espaçamento, tipografia
+└── types/          # tipos do domínio (espelham os DTOs do backend)
+```
+
+Separação de responsabilidades: **telas** (`app/`) consomem **serviços** (`api/`); o
+estado de sessão vive no **Context**; listas reaproveitam o hook `useResourceList`; e
+a UI compartilhada fica em `components/`.
+
+## 🔗 Repositórios relacionados
+
+- ⚙️ **Operações (.NET 9 + Oracle):** `<link do repo>` <!-- preencher -->
+- 🛰️ **Detecção (Java + Spring + IA):** `<link do repo>` <!-- preencher -->
+  - API publicada: `https://argus-intelligence-api-abe6g6facyh4fgfm.eastus-01.azurewebsites.net`
+
+## 📹 Vídeo demonstração
+
+🎥 **[Assista no YouTube](https://youtu.be/SEU_LINK_AQUI)** <!-- preencher com o link do vídeo -->
+
+## 👩‍💻 Integrantes
+
+| RM | Nome |
+|---|---|
+| 559561 | Anna Beatriz de Araujo Bonfim |
+| 560944 | Maria Eduarda Araujo Penas |
+| 561052 | Alane Rocha da Silva |
