@@ -1,14 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {ActivityIndicator,FlatList,Pressable,RefreshControl,ScrollView,StyleSheet,Text,View} from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
@@ -95,8 +86,11 @@ export default function AlertasScreen() {
   const contar = (key: Filtro) =>
     key === 'TODOS' ? data.length : data.filter((a) => a.nivel === key).length;
 
-  const visiveis =
-    filtro === 'TODOS' ? data : data.filter((a) => a.nivel === filtro);
+  // Mais recentes primeiro (padrão "feed"); os chips só filtram por nível.
+  // Ordena no cliente pra não depender da ordem que a API devolve.
+  const visiveis = (filtro === 'TODOS' ? data : data.filter((a) => a.nivel === filtro))
+    .slice()
+    .sort((a, b) => +new Date(b.dataGeracao) - +new Date(a.dataGeracao));
 
   return (
     <View style={styles.screen}>
