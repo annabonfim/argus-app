@@ -28,7 +28,7 @@ import { getErrorMessage } from '@/api/errors';
 import { getCurrentCoords } from '@/lib/location';
 import { STATUS_OCORRENCIA_LABEL } from '@/lib/labels';
 import { useAuth } from '@/context/AuthContext';
-import { PerfilUsuario, StatusOcorrencia } from '@/types/domain';
+import { PerfilUsuario, StatusOcorrencia, type Brigadista } from '@/types/domain';
 import { colors, fonts, spacing, typography } from '@/theme';
 
 const STATUS_OPTIONS: SelectOption<StatusOcorrencia>[] = [
@@ -47,19 +47,27 @@ export default function OcorrenciaFormScreen() {
     user?.perfil === PerfilUsuario.Coordenador;
   // id = edição. latitude/longitude/alertaId = prefill quando aberto a partir
   // de um foco de satélite (tela Focos).
-  const { id, latitude: latParam, longitude: lngParam, alertaId: alertaParam } =
-    useLocalSearchParams<{
-      id?: string;
-      latitude?: string;
-      longitude?: string;
-      alertaId?: string;
-    }>();
+  const {
+    id,
+    latitude: latParam,
+    longitude: lngParam,
+    alertaId: alertaParam,
+    descricao: descricaoParam,
+  } = useLocalSearchParams<{
+    id?: string;
+    latitude?: string;
+    longitude?: string;
+    alertaId?: string;
+    descricao?: string;
+  }>();
   const editing = typeof id === 'string';
   const ocorrenciaId = editing ? Number(id) : null;
 
-  const [brigadistas, setBrigadistas] = useState<SelectOption<number>[]>([]);
+  const [brigadistas, setBrigadistas] = useState<Brigadista[]>([]);
   const [brigadas, setBrigadas] = useState<SelectOption<number>[]>([]);
-  const [descricao, setDescricao] = useState('');
+  const [descricao, setDescricao] = useState(
+    typeof descricaoParam === 'string' ? descricaoParam : '',
+  );
   const [status, setStatus] = useState<StatusOcorrencia>(
     StatusOcorrencia.Aberta,
   );
@@ -89,9 +97,7 @@ export default function OcorrenciaFormScreen() {
           listBrigadistas(),
           listBrigadas(),
         ]);
-        setBrigadistas(
-          bgts.map((b) => ({ value: b.id, label: `#${b.id} — ${b.nome}` })),
-        );
+        setBrigadistas(bgts);
         setBrigadas(
           bgds.map((b) => ({ value: b.id, label: `#${b.id} — ${b.nome}` })),
         );
@@ -128,6 +134,24 @@ export default function OcorrenciaFormScreen() {
       setGpsLoading(false);
     }
   }
+
+  // Brigada → Brigadista em cascata: ao trocar a brigada, limpa o brigadista
+  // se ele não pertencer mais à brigada selecionada.
+  function handleBrigadaChange(novaBrigadaId: number) {
+    setBrigadaId(novaBrigadaId);
+    const atual = brigadistas.find((b) => b.id === brigadistaId);
+    if (!atual || atual.brigadaId !== novaBrigadaId) {
+      setBrigadistaId(null);
+    }
+  }
+
+  // Só os brigadistas da brigada selecionada aparecem no dropdown.
+  const brigadistaOptions: SelectOption<number>[] =
+    brigadaId === null
+      ? []
+      : brigadistas
+          .filter((b) => b.brigadaId === brigadaId)
+          .map((b) => ({ value: b.id, label: `#${b.id} — ${b.nome}` }));
 
   async function handleSave() {
     const lat = Number(latitude);
@@ -275,21 +299,26 @@ export default function OcorrenciaFormScreen() {
           />
 
           <Select
-            label="Brigadista responsável"
-            value={brigadistaId}
-            options={brigadistas}
-            onChange={setBrigadistaId}
+            label="Brigada responsável"
+            value={brigadaId}
+            options={brigadas}
+            onChange={handleBrigadaChange}
             placeholder={
-              brigadistas.length ? 'Selecione...' : 'Nenhum brigadista cadastrado'
+              brigadas.length ? 'Selecione...' : 'Nenhuma brigada cadastrada'
             }
           />
           <Select
-            label="Brigada"
-            value={brigadaId}
-            options={brigadas}
-            onChange={setBrigadaId}
+            label="Brigadista responsável"
+            value={brigadistaId}
+            options={brigadistaOptions}
+            onChange={setBrigadistaId}
+            disabled={brigadaId === null}
             placeholder={
-              brigadas.length ? 'Selecione...' : 'Nenhuma brigada cadastrada'
+              brigadaId === null
+                ? 'Escolha a brigada primeiro'
+                : brigadistaOptions.length
+                  ? 'Selecione...'
+                  : 'Nenhum brigadista nesta brigada'
             }
           />
 

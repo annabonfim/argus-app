@@ -21,6 +21,7 @@ interface SelectProps<T> {
   options: SelectOption<T>[];
   onChange: (value: T) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 // Picker simples: campo que abre um modal com a lista de opções. Genérico
@@ -31,6 +32,7 @@ export function Select<T extends string | number>({
   options,
   onChange,
   placeholder = 'Selecione...',
+  disabled = false,
 }: SelectProps<T>) {
   const [open, setOpen] = useState(false);
   const selected = options.find((o) => o.value === value);
@@ -38,7 +40,11 @@ export function Select<T extends string | number>({
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <Pressable style={styles.field} onPress={() => setOpen(true)}>
+      <Pressable
+        style={[styles.field, disabled && styles.fieldDisabled]}
+        onPress={() => !disabled && setOpen(true)}
+        disabled={disabled}
+      >
         <Text style={selected ? styles.valueText : styles.placeholder}>
           {selected ? selected.label : placeholder}
         </Text>
@@ -79,6 +85,7 @@ export function Select<T extends string | number>({
 
 const styles = StyleSheet.create({
   container: { gap: spacing.xs },
+  fieldDisabled: { opacity: 0.5 },
   label: {
     ...typography.caption,
     color: colors.forest,
