@@ -8,10 +8,12 @@ import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { getBrigada } from '@/api/brigadas';
 import { listBrigadistas } from '@/api/brigadistas';
+import { listRecursos } from '@/api/recursos';
 import { getErrorMessage } from '@/api/errors';
 import { formatTelefone } from '@/lib/format';
+import { TIPO_RECURSO_LABEL } from '@/lib/labels';
 import { useAuth } from '@/context/AuthContext';
-import {PerfilUsuario,type Brigada,type Brigadista,} from '@/types/domain';
+import {PerfilUsuario,type Brigada,type Brigadista,type Recurso,} from '@/types/domain';
 import { colors, fonts, radius, spacing, typography } from '@/theme';
 
 export default function BrigadaDetalheScreen() {
@@ -23,6 +25,7 @@ export default function BrigadaDetalheScreen() {
 
   const [brigada, setBrigada] = useState<Brigada | null>(null);
   const [equipe, setEquipe] = useState<Brigadista[]>([]);
+  const [recursos, setRecursos] = useState<Recurso[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +43,12 @@ export default function BrigadaDetalheScreen() {
         setEquipe(todos.filter((x) => x.brigadaId === brigadaId));
       } catch {
         setEquipe([]);
+      }
+      try {
+        const todosR = await listRecursos();
+        setRecursos(todosR.filter((r) => r.brigadaId === brigadaId));
+      } catch {
+        setRecursos([]);
       }
     } catch (err) {
       setError(getErrorMessage(err));
@@ -69,7 +78,7 @@ export default function BrigadaDetalheScreen() {
         <Text style={styles.headerTitle}>Brigada</Text>
         {podeEditar ? (
           <Pressable
-            onPress={() => router.push(`/brigada-form?id=${brigadaId}`)}
+            onPress={() => router.navigate(`/brigada-form?id=${brigadaId}`)}
             style={({ pressed }) => [styles.editButton, pressed && styles.editPressed]}
             accessibilityRole="button"
             accessibilityLabel="Editar brigada"
@@ -132,7 +141,7 @@ export default function BrigadaDetalheScreen() {
                 ]}
                 onPress={
                   podeEditar
-                    ? () => router.push(`/brigadista-form?id=${b.id}`)
+                    ? () => router.navigate(`/brigadista-form?id=${b.id}`)
                     : undefined
                 }
               >
@@ -164,8 +173,58 @@ export default function BrigadaDetalheScreen() {
               title="Adicionar brigadista"
               variant="outline"
               onPress={() =>
-                router.push(`/brigadista-form?brigadaId=${brigadaId}`)
+                router.navigate(`/brigadista-form?brigadaId=${brigadaId}`)
               }
+            />
+          )}
+
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Recursos</Text>
+            <Text style={styles.count}>{recursos.length}</Text>
+          </View>
+
+          {recursos.length === 0 ? (
+            <Text style={styles.empty}>Nenhum recurso nesta brigada.</Text>
+          ) : (
+            recursos.map((r) => (
+              <Pressable
+                key={r.id}
+                style={({ pressed }) => [
+                  styles.membro,
+                  pressed && podeEditar && styles.membroPressed,
+                ]}
+                onPress={
+                  podeEditar
+                    ? () => router.navigate(`/recurso-form?id=${r.id}`)
+                    : undefined
+                }
+              >
+                <View style={styles.membroBody}>
+                  <Text style={styles.membroNome}>{r.nome}</Text>
+                  <Text style={styles.membroMeta}>
+                    {TIPO_RECURSO_LABEL[r.tipo]}
+                  </Text>
+                </View>
+                <Badge
+                  label={r.disponivel ? 'Disponível' : 'Indisponível'}
+                  color={r.disponivel ? colors.success : colors.olive}
+                />
+                {podeEditar && (
+                  <Ionicons
+                    name="chevron-forward"
+                    size={18}
+                    color={colors.olive}
+                  />
+                )}
+              </Pressable>
+            ))
+          )}
+
+          {podeEditar && (
+            <Button
+              title="Adicionar recurso"
+              variant="outline"
+              onPress={() => router.navigate(`/recurso-form?brigadaId=${brigadaId}`)}
             />
           )}
         </ScrollView>

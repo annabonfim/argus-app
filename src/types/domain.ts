@@ -19,6 +19,8 @@ export interface Usuario {
   telefoneEmergencia: string | null;
   relacaoEmergencia: string | null;
   perfil: PerfilUsuario;
+  // Vínculo com o Brigadista (e, por ele, a brigada). null pra Admin/Coordenador.
+  brigadistaId: number | null;
 }
 
 // Usuário completo da listagem administrativa (GET /api/usuarios, só Admin).
@@ -154,6 +156,13 @@ export interface Brigada {
 
 export interface Recurso {
   id: number;
+  nome: string;
+  tipo: TipoRecurso;
+  disponivel: boolean;
+  brigadaId: number;
+}
+
+export interface RecursoInput {
   nome: string;
   tipo: TipoRecurso;
   disponivel: boolean;
