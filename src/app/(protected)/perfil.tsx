@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {KeyboardAvoidingView,Platform,ScrollView,StyleSheet,Text,View} from 'react-native';
 import Toast from 'react-native-toast-message';
 import { Badge } from '@/components/Badge';
@@ -7,6 +7,8 @@ import { TextField } from '@/components/TextField';
 import { Select, type SelectOption } from '@/components/Select';
 import { useAuth } from '@/context/AuthContext';
 import { atualizarPerfil } from '@/api/auth';
+import { getBrigadista } from '@/api/brigadistas';
+import { getBrigada } from '@/api/brigadas';
 import { getErrorMessage } from '@/api/errors';
 import { maskTelefone } from '@/lib/format';
 import { PERFIL_LABEL, RELACOES_EMERGENCIA } from '@/lib/labels';
@@ -33,6 +35,22 @@ export default function PerfilScreen() {
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [brigadaNome, setBrigadaNome] = useState<string | null>(null);
+
+  // Brigada do usuário (só brigadistas têm): brigadistaId → brigada → nome.
+  useEffect(() => {
+    const bid = user?.brigadistaId;
+    if (bid == null) return;
+    (async () => {
+      try {
+        const b = await getBrigadista(bid);
+        const brigada = await getBrigada(b.brigadaId);
+        setBrigadaNome(brigada.nome);
+      } catch {
+        // best-effort: se falhar, só não mostra a brigada.
+      }
+    })();
+  }, [user?.brigadistaId]);
 
   async function handleSave() {
     if (!user) return;
@@ -81,6 +99,10 @@ export default function PerfilScreen() {
         {/* Identidade — não editável aqui (email/perfil são controlados pelo admin). */}
         <View style={styles.card}>
           <View style={styles.field}>
+            <Text style={styles.fieldLabel}>Nome</Text>
+            <Text style={styles.fieldValue}>{user?.nome}</Text>
+          </View>
+          <View style={styles.field}>
             <Text style={styles.fieldLabel}>Email</Text>
             <Text style={styles.fieldValue}>{user?.email}</Text>
           </View>
@@ -90,6 +112,12 @@ export default function PerfilScreen() {
               <Badge label={PERFIL_LABEL[user.perfil]} color={colors.olive} />
             )}
           </View>
+          {brigadaNome && (
+            <View style={styles.field}>
+              <Text style={styles.fieldLabel}>Brigada</Text>
+              <Text style={styles.fieldValue}>{brigadaNome}</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.section}>
