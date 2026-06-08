@@ -150,7 +150,7 @@ export default function AlertasScreen() {
                 pressed && styles.pressed,
               ]}
               onPress={() =>
-                router.push({
+                router.navigate({
                   pathname: '/alerta-detalhe',
                   params: { id: item.id.toString() },
                 })

@@ -84,7 +84,7 @@ export default function AlertaDetalheScreen() {
         .filter(Boolean)
         .join(' — ');
     }
-    router.push({ pathname: '/ocorrencia-form', params });
+    router.navigate({ pathname: '/ocorrencia-form', params });
   }
 
   return (

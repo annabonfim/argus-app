@@ -56,7 +56,7 @@ export default function BrigadasScreen() {
           renderItem={({ item }) => (
             <Pressable
               style={({ pressed }) => [styles.card, pressed && styles.pressed]}
-              onPress={() => router.push(`/brigada-detalhe?id=${item.id}`)}
+              onPress={() => router.navigate(`/brigada-detalhe?id=${item.id}`)}
             >
               <View style={styles.cardBody}>
                 <View style={styles.cardHeader}>
@@ -84,7 +84,7 @@ export default function BrigadasScreen() {
         <Fab
           icon="add"
           label="Nova brigada"
-          onPress={() => router.push('/brigada-form')}
+          onPress={() => router.navigate('/brigada-form')}
           accessibilityLabel="Nova brigada"
         />
       )}

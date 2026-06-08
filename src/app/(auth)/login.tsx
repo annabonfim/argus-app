@@ -41,7 +41,7 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <Pressable
-        onPress={() => router.push('/sobre')}
+        onPress={() => router.navigate('/sobre')}
         hitSlop={8}
         style={styles.infoButton}
         accessibilityRole="button"

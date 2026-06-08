@@ -10,7 +10,7 @@ function ProfileButton() {
   const router = useRouter();
   return (
     <Pressable
-      onPress={() => router.push('/perfil')}
+      onPress={() => router.navigate('/perfil')}
       hitSlop={8}
       style={{ marginRight: 16 }}
       accessibilityRole="button"

@@ -15,7 +15,7 @@ export function NavCard({ icon, title, subtitle, href }: NavCardProps) {
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
-      onPress={() => router.push(href)}
+      onPress={() => router.navigate(href)}
     >
       <Ionicons name={icon} size={28} color={colors.fire} />
       <View>
