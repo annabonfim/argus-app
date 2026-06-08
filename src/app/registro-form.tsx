@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {Alert,Pressable,ScrollView,StyleSheet,Text,View} from 'react-native';
+import {Alert,KeyboardAvoidingView,Platform,Pressable,ScrollView,StyleSheet,Text,View} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -63,6 +63,14 @@ export default function RegistroFormScreen() {
           setLongitude(String(reg.longitude));
           setUrlFoto(reg.urlFoto);
           setDataRegistro(reg.dataRegistro);
+        } else if (presetOcorrenciaId !== null) {
+          // Registro novo a partir de uma ocorrência: herda a localização dela
+          // como padrão (o brigadista troca pelo GPS se estiver em outro ponto).
+          const oc = lista.find((o) => o.id === presetOcorrenciaId);
+          if (oc) {
+            setLatitude(String(oc.latitude));
+            setLongitude(String(oc.longitude));
+          }
         }
       } catch (err) {
         setError(getErrorMessage(err));
@@ -148,7 +156,10 @@ export default function RegistroFormScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <KeyboardAvoidingView
+      style={styles.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <StatusBar style="dark" />
       <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <Text style={styles.title}>
@@ -251,7 +262,7 @@ export default function RegistroFormScreen() {
           )}
         </ScrollView>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
