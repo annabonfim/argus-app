@@ -13,11 +13,12 @@ import { listRegistros } from '@/api/registros';
 import { getBrigada } from '@/api/brigadas';
 import { listBrigadistas } from '@/api/brigadistas';
 import { getErrorMessage } from '@/api/errors';
+import { useAuth } from '@/context/AuthContext';
 import { statusOcorrenciaTheme } from '@/lib/labels';
 import { formatCoords, formatDateTime } from '@/lib/format';
 import { getEndereco } from '@/lib/location';
 import { abrirMapa } from '@/lib/maps';
-import {StatusOcorrencia,type Brigadista,type Ocorrencia,type RegistroCampo} from '@/types/domain';
+import {PerfilUsuario,StatusOcorrencia,type Brigadista,type Ocorrencia,type RegistroCampo} from '@/types/domain';
 import { colors, fonts, radius, spacing, typography } from '@/theme';
 
 const STATUS_OPTIONS = [
@@ -30,6 +31,7 @@ const STATUS_OPTIONS = [
 export default function OcorrenciaDetalheScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const { id } = useLocalSearchParams<{ id: string }>();
   const ocorrenciaId = Number(id);
 
@@ -41,6 +43,7 @@ export default function OcorrenciaDetalheScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [savingStatus, setSavingStatus] = useState(false);
+  const [statusSel, setStatusSel] = useState<StatusOcorrencia | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -48,6 +51,7 @@ export default function OcorrenciaDetalheScreen() {
       const o = await getOcorrencia(ocorrenciaId);
       const todos = await listRegistros();
       setOcorrencia(o);
+      setStatusSel(o.status);
       setRegistros(todos.filter((r) => r.ocorrenciaId === ocorrenciaId));
 
       // Nome da brigada (cai no "#id" se a busca falhar).
@@ -80,8 +84,9 @@ export default function OcorrenciaDetalheScreen() {
     }, [load]),
   );
 
-  async function handleStatusChange(novo: StatusOcorrencia) {
-    if (!ocorrencia || novo === ocorrencia.status) return;
+  async function handleSalvarStatus() {
+    if (!ocorrencia || statusSel === null || statusSel === ocorrencia.status)
+      return;
     setSavingStatus(true);
     setError(null);
     try {
@@ -89,10 +94,10 @@ export default function OcorrenciaDetalheScreen() {
         descricao: ocorrencia.descricao,
         latitude: ocorrencia.latitude,
         longitude: ocorrencia.longitude,
-        status: novo,
+        status: statusSel,
         dataAbertura: ocorrencia.dataAbertura,
         dataFinalizacao:
-          novo === StatusOcorrencia.Finalizada
+          statusSel === StatusOcorrencia.Finalizada
             ? (ocorrencia.dataFinalizacao ?? new Date().toISOString())
             : null,
         brigadistaId: ocorrencia.brigadistaId,
@@ -106,6 +111,16 @@ export default function OcorrenciaDetalheScreen() {
       setSavingStatus(false);
     }
   }
+
+  // Brigadista só registra na ocorrência da própria brigada (espelha o backend);
+  // Admin/Coordenador sempre podem. `equipe` = brigadistas da brigada da ocorrência.
+  const isAdminCoord =
+    user?.perfil === PerfilUsuario.Admin ||
+    user?.perfil === PerfilUsuario.Coordenador;
+  const podeRegistrar =
+    isAdminCoord ||
+    (user?.brigadistaId != null &&
+      equipe.some((b) => b.id === user.brigadistaId));
 
   return (
     <View style={styles.screen}>
@@ -121,7 +136,7 @@ export default function OcorrenciaDetalheScreen() {
         </Pressable>
         <Text style={styles.headerTitle}>Ocorrência #{ocorrenciaId}</Text>
         <Pressable
-          onPress={() => router.push(`/ocorrencia-form?id=${ocorrenciaId}`)}
+          onPress={() => router.navigate(`/ocorrencia-form?id=${ocorrenciaId}`)}
           style={({ pressed }) => [styles.editButton, pressed && styles.editPressed]}
           accessibilityRole="button"
           accessibilityLabel="Editar ocorrência"
@@ -157,7 +172,7 @@ export default function OcorrenciaDetalheScreen() {
                 pressed && styles.pressed,
               ]}
               onPress={() =>
-                router.push({
+                router.navigate({
                   pathname: '/alerta-detalhe',
                   params: { id: String(ocorrencia.alertaId) },
                 })
@@ -222,18 +237,21 @@ export default function OcorrenciaDetalheScreen() {
             </View>
           </View>
 
-          {/* Atualizar status — liberado pra qualquer perfil (PUT). */}
-          <View style={styles.statusRow}>
-            <View style={styles.statusSelect}>
-              <Select
-                label="Atualizar status"
-                value={ocorrencia.status}
-                options={STATUS_OPTIONS}
-                onChange={handleStatusChange}
+          {/* Atualizar status — escolhe e confirma no botão (não auto-salva). */}
+          <View style={styles.statusBlock}>
+            <Select
+              label="Atualizar status"
+              value={statusSel}
+              options={STATUS_OPTIONS}
+              onChange={setStatusSel}
+            />
+            {statusSel !== null && statusSel !== ocorrencia.status && (
+              <Button
+                title="Salvar status"
+                onPress={handleSalvarStatus}
+                loading={savingStatus}
+                variant="fire"
               />
-            </View>
-            {savingStatus && (
-              <ActivityIndicator color={colors.fire} style={styles.statusSpinner} />
             )}
           </View>
 
@@ -253,7 +271,11 @@ export default function OcorrenciaDetalheScreen() {
                   styles.registroCard,
                   pressed && styles.pressed,
                 ]}
-                onPress={() => router.push(`/registro-form?id=${r.id}`)}
+                onPress={
+                  podeRegistrar
+                    ? () => router.navigate(`/registro-form?id=${r.id}`)
+                    : undefined
+                }
               >
                 <View style={styles.registroBody}>
                   <Text style={styles.registroTitle} numberOfLines={1}>
@@ -263,18 +285,30 @@ export default function OcorrenciaDetalheScreen() {
                     {formatDateTime(r.dataRegistro)}
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color={colors.olive} />
+                {podeRegistrar && (
+                  <Ionicons
+                    name="chevron-forward"
+                    size={18}
+                    color={colors.olive}
+                  />
+                )}
               </Pressable>
             ))
           )}
 
-          <Button
-            title="Adicionar registro"
-            onPress={() =>
-              router.push(`/registro-form?ocorrenciaId=${ocorrenciaId}`)
-            }
-            variant="outline"
-          />
+          {podeRegistrar ? (
+            <Button
+              title="Adicionar registro"
+              onPress={() =>
+                router.navigate(`/registro-form?ocorrenciaId=${ocorrenciaId}`)
+              }
+              variant="outline"
+            />
+          ) : (
+            <Text style={styles.empty}>
+              Só a brigada responsável pode adicionar registros.
+            </Text>
+          )}
         </ScrollView>
       )}
     </View>
@@ -371,9 +405,7 @@ const styles = StyleSheet.create({
     color: colors.fire,
     textDecorationLine: 'underline',
   },
-  statusRow: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm },
-  statusSelect: { flex: 1 },
-  statusSpinner: { marginBottom: 14 },
+  statusBlock: { gap: spacing.sm },
   registrosHeader: {
     flexDirection: 'row',
     alignItems: 'center',

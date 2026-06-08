@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {Alert,Pressable,ScrollView,StyleSheet,Text,View,} from 'react-native';
+import {Alert,KeyboardAvoidingView,Platform,Pressable,ScrollView,StyleSheet,Text,View,} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -170,26 +170,38 @@ export default function OcorrenciaFormScreen() {
         brigadaId,
         alertaId,
       };
+      let novaId: number | null = null;
       if (ocorrenciaId !== null) {
         await updateOcorrencia(ocorrenciaId, input);
       } else if (alertaId !== null) {
         // Origem: alerta de satélite. O backend gera a descrição (se vazia) e
         // já preenche o alertaId na ocorrência criada.
-        await criarOcorrenciaDeAlerta(alertaId, {
+        const nova = await criarOcorrenciaDeAlerta(alertaId, {
           brigadaId,
           brigadistaId,
           latitude: lat,
           longitude: long,
           descricao: descricao.trim() || undefined,
         });
+        novaId = nova.id;
       } else {
-        await createOcorrencia(input);
+        const nova = await createOcorrencia(input);
+        novaId = nova.id;
       }
       Toast.show({
         type: 'success',
         text1: editing ? 'Ocorrência atualizada' : 'Ocorrência criada',
       });
-      router.back();
+      // Ao criar, leva direto pra ocorrência nova (replace: não deixa o form no
+      // histórico). Ao editar, só volta pra tela anterior (o detalhe).
+      if (novaId !== null) {
+        router.replace({
+          pathname: '/ocorrencia-detalhe',
+          params: { id: String(novaId) },
+        });
+      } else {
+        router.back();
+      }
     } catch (err) {
       setError(getErrorMessage(err));
       setSaving(false);
@@ -221,7 +233,10 @@ export default function OcorrenciaFormScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <KeyboardAvoidingView
+      style={styles.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <StatusBar style="dark" />
       <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <Text style={styles.title}>
@@ -322,7 +337,7 @@ export default function OcorrenciaFormScreen() {
           )}
         </ScrollView>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
