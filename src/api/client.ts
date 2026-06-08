@@ -1,15 +1,11 @@
 import axios from 'axios';
-import { Platform } from 'react-native';
 
-// iOS sim e Android emu resolvem sozinhos; device físico na WiFi seta
-// EXPO_PUBLIC_API_URL (ex.: http://192.168.0.42:5215) sem editar este arquivo.
+// Default = .NET na nuvem (Azure), pra o APK publicado funcionar pro professor.
+// Pra dev local contra a .NET da sua máquina, sete EXPO_PUBLIC_API_URL
+// (iOS sim: http://localhost:5215 · Android emu: http://10.0.2.2:5215).
 const baseURL =
   process.env.EXPO_PUBLIC_API_URL ??
-  Platform.select({
-    ios: 'http://localhost:5215',
-    android: 'http://10.0.2.2:5215',
-    default: 'http://localhost:5215',
-  });
+  'https://argus-operations-rm559561.azurewebsites.net';
 
 // O token (Bearer) e o interceptor de 401 são configurados pelo AuthContext.
 export const api = axios.create({
