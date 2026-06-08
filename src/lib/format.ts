@@ -1,18 +1,32 @@
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-// Data/hora explícita em pt-BR: "02/06/2026 às 15:57". Num app de operações,
-// a hora exata importa (timeline de resposta ao foco).
-export function formatDateTime(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '—';
-  return format(date, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
+const TIMEZONE = 'America/Sao_Paulo';
+
+// O backend manda timestamps em UTC. Se vierem sem designador de fuso ('Z' ou
+// offset), tratamos como UTC pra o instante ficar correto.
+function toUtcDate(iso: string): Date {
+  const s = /[zZ]|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso}Z`;
+  return new Date(s);
 }
 
-// Data relativa: "há cerca de 20 minutos". Usada no mapa de focos, onde o que
-// importa é o quão recente é a detecção do satélite.
+// Data/hora em pt-BR no fuso de Brasília: "08/06/2026 às 15:57". O timeZone é
+// fixo pra não depender do fuso do aparelho (o emulador às vezes está em UTC).
+export function formatDateTime(iso: string): string {
+  const date = toUtcDate(iso);
+  if (Number.isNaN(date.getTime())) return '—';
+  const dia = date.toLocaleDateString('pt-BR', { timeZone: TIMEZONE });
+  const hora = date.toLocaleTimeString('pt-BR', {
+    timeZone: TIMEZONE,
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return `${dia} às ${hora}`;
+}
+
+// Data relativa: "há cerca de 20 minutos" (instante correto via toUtcDate).
 export function formatRelative(iso: string): string {
-  const date = new Date(iso);
+  const date = toUtcDate(iso);
   if (Number.isNaN(date.getTime())) return '—';
   return formatDistanceToNow(date, { addSuffix: true, locale: ptBR });
 }
