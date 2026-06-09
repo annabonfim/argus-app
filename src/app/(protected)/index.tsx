@@ -107,6 +107,14 @@ export default function HomeScreen() {
 
       <Text style={styles.sectionTitle}>Acesso rápido</Text>
       <View style={styles.cards}>
+        {user?.brigadistaId != null && (
+          <NavCard
+            icon="shield-half-outline"
+            title="Minha brigada"
+            subtitle="Ocorrências da sua equipe"
+            href="/minha-brigada"
+          />
+        )}
         <NavCard
           icon="people-outline"
           title="Brigadas"

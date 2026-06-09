@@ -99,6 +99,10 @@ export default function AppLayout() {
       <Tabs.Screen name="brigadas" options={{ href: null, title: 'Brigadas' }} />
       <Tabs.Screen name="recursos" options={{ href: null, title: 'Recursos' }} />
       <Tabs.Screen name="usuarios" options={{ href: null, title: 'Usuários' }} />
+      <Tabs.Screen
+        name="minha-brigada"
+        options={{ href: null, title: 'Minha brigada' }}
+      />
     </Tabs>
   );
 }

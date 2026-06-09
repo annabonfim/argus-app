@@ -135,15 +135,24 @@ export default function OcorrenciaDetalheScreen() {
           <Ionicons name="arrow-back" size={26} color={colors.cream} />
         </Pressable>
         <Text style={styles.headerTitle}>Ocorrência #{ocorrenciaId}</Text>
-        <Pressable
-          onPress={() => router.navigate(`/ocorrencia-form?id=${ocorrenciaId}`)}
-          style={({ pressed }) => [styles.editButton, pressed && styles.editPressed]}
-          accessibilityRole="button"
-          accessibilityLabel="Editar ocorrência"
-        >
-          <Ionicons name="create-outline" size={15} color={colors.cream} />
-          <Text style={styles.headerAction}>Editar</Text>
-        </Pressable>
+        {isAdminCoord ? (
+          <Pressable
+            onPress={() =>
+              router.navigate(`/ocorrencia-form?id=${ocorrenciaId}`)
+            }
+            style={({ pressed }) => [
+              styles.editButton,
+              pressed && styles.editPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel="Editar ocorrência"
+          >
+            <Ionicons name="create-outline" size={15} color={colors.cream} />
+            <Text style={styles.headerAction}>Editar</Text>
+          </Pressable>
+        ) : (
+          <View style={styles.headerSpacer} />
+        )}
       </View>
 
       {loading ? (
@@ -237,23 +246,26 @@ export default function OcorrenciaDetalheScreen() {
             </View>
           </View>
 
-          {/* Atualizar status — escolhe e confirma no botão (não auto-salva). */}
-          <View style={styles.statusBlock}>
-            <Select
-              label="Atualizar status"
-              value={statusSel}
-              options={STATUS_OPTIONS}
-              onChange={setStatusSel}
-            />
-            {statusSel !== null && statusSel !== ocorrencia.status && (
-              <Button
-                title="Salvar status"
-                onPress={handleSalvarStatus}
-                loading={savingStatus}
-                variant="fire"
+          {/* Atualizar status — só Admin/Coord ou brigadista da própria brigada.
+              Escolhe e confirma no botão (não auto-salva). */}
+          {podeRegistrar && (
+            <View style={styles.statusBlock}>
+              <Select
+                label="Atualizar status"
+                value={statusSel}
+                options={STATUS_OPTIONS}
+                onChange={setStatusSel}
               />
-            )}
-          </View>
+              {statusSel !== null && statusSel !== ocorrencia.status && (
+                <Button
+                  title="Salvar status"
+                  onPress={handleSalvarStatus}
+                  loading={savingStatus}
+                  variant="fire"
+                />
+              )}
+            </View>
+          )}
 
           {/* Registros de campo desta ocorrência (nascem aqui, sem picker). */}
           <View style={styles.registrosHeader}>
@@ -340,6 +352,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.headingBold,
     color: colors.cream,
   },
+  // Reserva o mesmo espaço do botão Editar pra manter o título centralizado
+  // quando o usuário não tem permissão de editar (brigadista).
+  headerSpacer: { width: 64 },
   editButton: {
     flexDirection: 'row',
     alignItems: 'center',
