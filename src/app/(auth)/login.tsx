@@ -7,7 +7,7 @@ import { Logo } from '@/components/Logo';
 import { TextField } from '@/components/TextField';
 import { useAuth } from '@/context/AuthContext';
 import { getErrorMessage } from '@/api/errors';
-import { colors, fonts, spacing, typography } from '@/theme';
+import { colors, fonts, radius, spacing, typography } from '@/theme';
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -60,6 +60,38 @@ export default function LoginScreen() {
       >
         <View style={styles.header}>
           <Logo variant="vertical" width={170} />
+          <Text style={styles.tagline}>
+            Monitoramento via satélite e IA para resposta rápida a incêndios
+            florestais.
+          </Text>
+          <View style={styles.pilares}>
+            <View style={styles.pilar}>
+              <View style={styles.pilarIcon}>
+                <Ionicons name="planet-outline" size={22} color={colors.fire} />
+              </View>
+              <Text style={styles.pilarLabel}>Dados de satélite</Text>
+            </View>
+            <View style={styles.pilar}>
+              <View style={styles.pilarIcon}>
+                <Ionicons
+                  name="sparkles-outline"
+                  size={22}
+                  color={colors.fire}
+                />
+              </View>
+              <Text style={styles.pilarLabel}>Inteligência</Text>
+            </View>
+            <View style={styles.pilar}>
+              <View style={styles.pilarIcon}>
+                <Ionicons
+                  name="shield-checkmark-outline"
+                  size={22}
+                  color={colors.fire}
+                />
+              </View>
+              <Text style={styles.pilarLabel}>Resposta em campo</Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.form}>
@@ -110,7 +142,31 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     gap: spacing.lg,
   },
-  header: { alignItems: 'center' },
+  header: { alignItems: 'center', gap: spacing.lg },
+  tagline: {
+    ...typography.body,
+    color: colors.olive,
+    textAlign: 'center',
+    paddingHorizontal: spacing.lg,
+  },
+  pilares: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
+  pilar: { flex: 1, alignItems: 'center', gap: spacing.xs },
+  pilarIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.fireWarm,
+    backgroundColor: colors.creamLight,
+  },
+  pilarLabel: {
+    ...typography.caption,
+    color: colors.olive,
+    textAlign: 'center',
+    fontFamily: fonts.bodyMedium,
+  },
   form: { gap: spacing.lg },
   error: {
     ...typography.caption,
