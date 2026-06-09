@@ -8,7 +8,7 @@ import Toast from 'react-native-toast-message';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Select } from '@/components/Select';
-import { getOcorrencia, updateOcorrencia } from '@/api/ocorrencias';
+import { getOcorrencia, updateStatusOcorrencia } from '@/api/ocorrencias';
 import { listRegistros } from '@/api/registros';
 import { getBrigada } from '@/api/brigadas';
 import { listBrigadistas } from '@/api/brigadistas';
@@ -90,19 +90,9 @@ export default function OcorrenciaDetalheScreen() {
     setSavingStatus(true);
     setError(null);
     try {
-      await updateOcorrencia(ocorrenciaId, {
-        descricao: ocorrencia.descricao,
-        latitude: ocorrencia.latitude,
-        longitude: ocorrencia.longitude,
-        status: statusSel,
-        dataAbertura: ocorrencia.dataAbertura,
-        dataFinalizacao:
-          statusSel === StatusOcorrencia.Finalizada
-            ? (ocorrencia.dataFinalizacao ?? new Date().toISOString())
-            : null,
-        brigadistaId: ocorrencia.brigadistaId,
-        brigadaId: ocorrencia.brigadaId,
-      });
+      // PATCH dedicado: manda só o status (int 1..4). Restante da ocorrência
+      // não é tocado, e o backend cuida do dataFinalizacao ao finalizar.
+      await updateStatusOcorrencia(ocorrenciaId, statusSel);
       await load();
       Toast.show({ type: 'success', text1: 'Status atualizado' });
     } catch (err) {

@@ -1,5 +1,9 @@
 import { api } from './client';
-import type { Ocorrencia, OcorrenciaInput } from '@/types/domain';
+import type {
+  Ocorrencia,
+  OcorrenciaInput,
+  StatusOcorrencia,
+} from '@/types/domain';
 
 const PATH = '/api/ocorrencias';
 
@@ -21,12 +25,23 @@ export async function createOcorrencia(
   return data;
 }
 
-// PUT (atualizar, inclusive status) é liberado pra qualquer perfil logado.
+// PUT = edição completa da ocorrência (descrição, brigada, etc.). Restrito a
+// Admin/Coordenador no backend — Brigadista recebe 403.
 export async function updateOcorrencia(
   id: number,
   input: OcorrenciaInput,
 ): Promise<void> {
   await api.put(`${PATH}/${id}`, { ...input, id });
+}
+
+// PATCH dedicado só pra avançar o status. Liberado pro Brigadista na PRÓPRIA
+// brigada (403 fora dela / sem vínculo). Manda apenas { status } — nunca o
+// objeto inteiro. O backend cuida de dataFinalizacao quando finaliza.
+export async function updateStatusOcorrencia(
+  id: number,
+  status: StatusOcorrencia,
+): Promise<void> {
+  await api.patch(`${PATH}/${id}/status`, { status });
 }
 
 export async function deleteOcorrencia(id: number): Promise<void> {
