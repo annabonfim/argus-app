@@ -17,6 +17,12 @@
   <img src="https://img.shields.io/badge/Axios-API%20.NET-5A29E4?logo=axios&logoColor=white" alt="Axios" />
 </p>
 
+<p align="center">
+  <a href="https://expo.dev/accounts/annabonfim/projects/argus-mobile/builds/1090f75e-6b1d-48e0-bf22-f812d1ce1006">
+    <img src="https://img.shields.io/badge/⬇️%20Baixar%20APK-EAS%20Build-000020?logo=expo&logoColor=white" alt="Baixar APK" />
+  </a>
+</p>
+
 ---
 
 # Argus Mobile 🔥
@@ -47,7 +53,7 @@ entrega da GS): a **detecção** (Java, lê o satélite e gera alertas), as **op
 
 | Passo | O que fazer |
 |---|---|
-| 1️⃣ | Abrir o app (APK no Firebase App Distribution ou rodar localmente — ver [Como executar](#-como-executar)) |
+| 1️⃣ | Abrir o app — [**instalar via Firebase App Distribution**](https://appdistribution.firebase.dev/i/011a10d2381aec34), baixar a [APK no EAS Build](https://expo.dev/accounts/annabonfim/projects/argus-mobile/builds/1090f75e-6b1d-48e0-bf22-f812d1ce1006), ou rodar localmente (ver [Como executar](#-como-executar)) |
 | 2️⃣ | Logar como **`admin@argus.com` / `Admin@123`** |
 | 3️⃣ | **Alertas** → filtrar por **Crítico** → abrir um alerta → **"+ Gerar ocorrência"** → preencher → criar |
 | 4️⃣ | **Mapa** → ver os focos do satélite, dar zoom, buscar por região (ex.: "Pantanal") |
@@ -113,7 +119,9 @@ documenta tudo em registros de campo até o encerramento.
 | **Alerta ≠ Ocorrência** | Detecção é **automática** (Java alerta); resposta é **humana** — o coordenador *promove* o alerta a ocorrência. Nem todo alerta vira ação (queimada legal, risco baixo, falso positivo). |
 | **Alertas por *polling* (15s)** | Alternativa pragmática ao push/FCM: o app atualiza em segundo plano enquanto a tela está visível e dá um **toast** quando chega um alerta crítico/alto. Pausa em background pra não gastar bateria/cota. |
 | **Brigada → Brigadista em cascata** | Integridade: o responsável tem que pertencer à brigada designada. O dropdown de brigadista só mostra membros da brigada escolhida. |
-| **Autorização por papel** | O brigadista vê/atualiza; criar/excluir e promover são de Admin/Coordenador — escondido no app **e** validado por `403` no backend. |
+| **Autorização por papel** | Criar/editar/excluir e promover alertas são de Admin/Coordenador; o brigadista atua só na **própria brigada** — escondido no app **e** validado por `403` no backend. |
+| **Brigadista avança status, não edita** | Mudar o status usa um `PATCH /ocorrencias/{id}/status` dedicado (liberado ao brigadista da brigada responsável); a edição completa fica no `PUT`, exclusivo de Admin/Coordenador. |
+| **"Minha brigada"** | O brigadista tem uma aba só com as ocorrências da própria brigada — escopo de trabalho claro, sem ruído das demais. |
 | **Google Maps key via `.env`** | Mantém a chave **fora do repositório** (`app.config.js` injeta no build). |
 
 ## 👥 Perfis de usuário
@@ -122,9 +130,9 @@ documenta tudo em registros de campo até o encerramento.
 |---|---|
 | **Admin** | Tudo: gerencia usuários, brigadas, brigadistas, recursos; cria/exclui ocorrências; promove alertas. |
 | **Coordenador** | Coordena a operação: cria ocorrências, promove alertas, gerencia equipe. |
-| **Brigadista** | Em campo: vê alertas/ocorrências, atualiza status e registra ações nas ocorrências sob sua responsabilidade. |
+| **Brigadista** | Em campo: vê alertas/ocorrências e a aba **Minha brigada**; avança o status e registra ações nas ocorrências da própria brigada. |
 
-## 📱 Telas (17 no total)
+## 📱 Telas (20 no total)
 
 **Públicas (autenticação)**
 - **Login** — autenticação JWT real
@@ -138,10 +146,14 @@ documenta tudo em registros de campo até o encerramento.
 
 **Operações (CRUD)**
 - **Ocorrências** + **Detalhe** + **Formulário** — CRUD completo
+- **Minha brigada** — ocorrências atribuídas à brigada do brigadista logado
 - **Formulário de registro de campo** — registros aninhados na ocorrência
 - **Brigadas** + **Detalhe** + **Formulário** — gestão de equipes
 - **Formulário de brigadista** — cadastro de membros
-- **Recursos** — veículos e equipamentos
+- **Recursos** + **Formulário de recurso** — veículos e equipamentos (CRUD via detalhe da brigada)
+
+**Administração**
+- **Usuários** — listagem de todos os usuários do sistema *(somente Admin)*
 
 **Conta**
 - **Perfil** — edição self-service dos próprios dados + logout
@@ -168,6 +180,7 @@ Código de convite para cadastro: **`ARGUS-2026`**
 | Localização | **expo-location** (GPS) |
 | UI | **@expo/vector-icons** (Ionicons) · fontes **Oswald + Inter** |
 | Datas / feedback | **date-fns** · **react-native-toast-message** |
+| Build / distribuição | **EAS Build** · **Firebase App Distribution** |
 
 ## ✅ CRUD via API (.NET)
 
@@ -176,13 +189,13 @@ dados são sempre manipulados via API, nunca apenas no dispositivo.
 
 | Entidade | C | R | U | D | Quem |
 |---|:-:|:-:|:-:|:-:|---|
-| **Ocorrências** | ✅ | ✅ | ✅ | ✅ | Coordenação cria/exclui; brigadista atualiza |
-| **Registros de campo** | ✅ | ✅ | — | — | Brigadista (aninhado na ocorrência) |
+| **Ocorrências** | ✅ | ✅ | ✅ | ✅ | Coordenação cria/edita/exclui; brigadista avança o status (na própria brigada) |
+| **Registros de campo** | ✅ | ✅ | ✅ | ✅ | Brigadista, aninhados na ocorrência da própria brigada |
 | **Brigadas** | ✅ | ✅ | ✅ | ✅ | Admin/Coordenador |
-| **Brigadistas** | ✅ | ✅ | ✅ | — | Admin/Coordenador |
+| **Brigadistas** | ✅ | ✅ | ✅ | ✅ | Admin/Coordenador |
+| **Recursos** | ✅ | ✅ | ✅ | ✅ | Admin/Coordenador (via detalhe da brigada) |
 | **Perfil** | — | ✅ | ✅ | — | O próprio usuário |
 | **Alertas / Focos** | — | ✅ | — | — | Leitura (vindos do Java) + promoção a ocorrência |
-| **Recursos** | — | ✅ | — | — | Leitura |
 
 Feedback visual em tudo: **loaders**, **toasts** de sucesso/erro e mensagens
 amigáveis extraídas do `ProblemDetails` do backend.
@@ -204,9 +217,9 @@ cp .env.example .env
 # edite .env:  GOOGLE_MAPS_API_KEY=sua_chave_aqui
 
 # 2. URL da API (opcional):
-#    iOS sim → localhost:5215 · Android emu → 10.0.2.2:5215 (padrão).
-#    Para device físico / nuvem, defina:
-export EXPO_PUBLIC_API_URL="https://sua-api-na-nuvem"
+#    Por padrão o app já aponta pra API .NET publicada na Azure.
+#    Para rodar contra a .NET local, sobrescreva:
+export EXPO_PUBLIC_API_URL="http://10.0.2.2:5215"   # Android emu (iOS sim: localhost:5215)
 
 # 3. Dev build:
 npx expo run:android   # ou run:ios
@@ -222,11 +235,11 @@ src/
 │   ├── alertas.ts       # listar/obter alerta + promover a ocorrência
 │   ├── ocorrencias.ts   # CRUD de ocorrências
 │   ├── registros.ts     # registros de campo
-│   ├── brigadas.ts · brigadistas.ts · recursos.ts · focos.ts
+│   ├── brigadas.ts · brigadistas.ts · recursos.ts · focos.ts · usuarios.ts
 │   └── errors.ts        # getErrorMessage (ProblemDetails → texto amigável)
 ├── app/            # rotas (Expo Router)
 │   ├── (auth)/          # login, signup
-│   ├── (protected)/     # tabs: início, alertas, ocorrências, perfil, mapa…
+│   ├── (protected)/     # início, alertas, ocorrências, mapa, minha-brigada, usuários…
 │   ├── *-detalhe.tsx    # telas de detalhe
 │   ├── *-form.tsx       # formulários de CRUD
 │   └── sobre.tsx
@@ -245,12 +258,23 @@ a UI compartilhada fica em `components/`.
 ## 🔗 Repositórios relacionados
 
 - ⚙️ **Operações — .NET 9 + Oracle:** [annabonfim/argus-operations-dotnet](https://github.com/annabonfim/argus-operations-dotnet)
+  - API publicada (backend que este app consome): [argus-operations (Azure)](https://argus-operations-rm559561.azurewebsites.net)
 - 🛰️ **Detecção — Java + Spring + IA:** [alanerochaa/argus-intelligence-api](https://github.com/alanerochaa/argus-intelligence-api)
   - API publicada: [argus-intelligence-api (Azure)](https://argus-intelligence-api-abe6g6facyh4fgfm.eastus-01.azurewebsites.net)
 
 ## 📹 Vídeo demonstração
 
-🎥 **[Assista no YouTube](https://youtu.be/SEU_LINK_AQUI)** <!-- preencher com o link do vídeo -->
+🎥 **[Assista no YouTube](https://youtu.be/2FBIzb-WXX8)**
+
+## 📦 Publicação (Firebase App Distribution)
+
+O app está publicado no **Firebase App Distribution** — abra o link de convite,
+aceite e baixe a APK direto no Android:
+
+📲 **[Instalar via Firebase App Distribution](https://appdistribution.firebase.dev/i/011a10d2381aec34)**
+
+> Alternativa de download direto: [APK no EAS Build](https://expo.dev/accounts/annabonfim/projects/argus-mobile/builds/1090f75e-6b1d-48e0-bf22-f812d1ce1006).
+> A versão publicada corresponde ao commit exibido na tela **Sobre** do app.
 
 ## 👩‍💻 Integrantes
 
