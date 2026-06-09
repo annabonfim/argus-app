@@ -27,13 +27,26 @@
 
 # Argus Mobile 🔥
 
-App **React Native + Expo** que é a **ferramenta de campo do brigadista** dentro do
-ecossistema Argus — uma solução de ponta a ponta que conecta a **economia espacial**
-(dados de satélite) ao combate a **incêndios florestais** aqui na Terra.
+**Ferramenta de campo do brigadista** no sistema **Argus** — um app React Native +
+Expo que coloca na mão de quem combate o fogo os dados que vêm do espaço. É a camada
+onde a detecção por satélite vira **ação no terreno**.
 
-O Argus é composto por **três camadas**, cada uma sendo um domínio próprio (e uma
-entrega da GS): a **detecção** (Java, lê o satélite e gera alertas), as **operações**
-(.NET, coordena a resposta) e o **campo** (este app, onde o brigadista age).
+Incêndios florestais costumam ser vistos cedo pelo satélite e tarde por quem está em
+campo. O Argus fecha essa lacuna: aplica a **economia espacial** — os dados abertos da
+**NASA FIRMS** — a um problema concreto do chão, coordenando a resposta de brigadas a
+focos de calor reais, **do alerta ao encerramento da ocorrência**.
+
+Este app é a **ponta operacional** dessa cadeia. O brigadista **tria os alertas**
+gerados a partir do satélite, **promove** os críticos a ocorrências, acompanha o
+trabalho da **própria brigada**, **avança o status** em campo e **registra cada ação
+com GPS** — tudo contra uma API REST, com autenticação **JWT** e **autorização por
+papel**.
+
+O Argus é composto por **três camadas**, cada uma um domínio próprio (e uma entrega da
+GS): a **detecção** (Java + IA, lê o satélite e gera alertas priorizados por risco), as
+**operações** (.NET 9 + Oracle, coordena brigadas, recursos e ocorrências) e o **campo**
+(este app, onde o brigadista age). O mobile conversa **só com a .NET**, que orquestra as
+duas pontas e expõe uma origem única de dados.
 
 ## 🛰️ A solução (Global Solution 2026/1)
 
@@ -57,6 +70,10 @@ entrega da GS): a **detecção** (Java, lê o satélite e gera alertas), as **op
 | 2️⃣ | Logar como **`admin@argus.com` / `Admin@123`** |
 | 3️⃣ | **Alertas** → filtrar por **Crítico** → abrir um alerta → **"+ Gerar ocorrência"** → preencher → criar |
 | 4️⃣ | **Mapa** → ver os focos do satélite, dar zoom, buscar por região (ex.: "Pantanal") |
+
+## 📹 Vídeo demonstração
+
+🎥 **[Assista no YouTube](https://youtu.be/2FBIzb-WXX8)** — tour de ~5 min pelo app: login, triagem de alerta crítico, geração de ocorrência, mapa de focos e registros de campo.
 
 ## 🏗️ Arquitetura
 
@@ -202,13 +219,26 @@ amigáveis extraídas do `ProblemDetails` do backend.
 
 ## 🚀 Como executar
 
-### Pré-requisitos
+Duas formas de abrir o app — **instalar a APK pronta** (rápido, sem buildar) ou
+**rodar o projeto localmente**.
+
+### Opção 1 — Instalar a APK pronta 📲
+
+O app está **publicado no Firebase App Distribution**. Abra o convite, aceite e
+baixe a APK direto no Android:
+
+📲 **[Instalar via Firebase App Distribution](https://appdistribution.firebase.dev/i/011a10d2381aec34)**
+
+Alternativa de download direto: **[APK no EAS Build](https://expo.dev/accounts/annabonfim/projects/argus-mobile/builds/1090f75e-6b1d-48e0-bf22-f812d1ce1006)**. A versão publicada corresponde ao commit exibido na tela **Sobre** do app.
+
+### Opção 2 — Rodar localmente 💻
+
+**Pré-requisitos**
 - Node 20+ e `npx`
 - A **API .NET** (Argus Operations) rodando — local ou na nuvem
 - Um **development build** (o app **não roda no Expo Go**, por causa do `react-native-maps`)
 - No Android, uma **Google Maps API key** (Maps SDK for Android)
 
-### Passos
 ```bash
 npm install
 
@@ -261,20 +291,6 @@ a UI compartilhada fica em `components/`.
   - API publicada (backend que este app consome): [argus-operations (Azure)](https://argus-operations-rm559561.azurewebsites.net)
 - 🛰️ **Detecção — Java + Spring + IA:** [alanerochaa/argus-intelligence-api](https://github.com/alanerochaa/argus-intelligence-api)
   - API publicada: [argus-intelligence-api (Azure)](https://argus-intelligence-api-abe6g6facyh4fgfm.eastus-01.azurewebsites.net)
-
-## 📹 Vídeo demonstração
-
-🎥 **[Assista no YouTube](https://youtu.be/2FBIzb-WXX8)**
-
-## 📦 Publicação (Firebase App Distribution)
-
-O app está publicado no **Firebase App Distribution** — abra o link de convite,
-aceite e baixe a APK direto no Android:
-
-📲 **[Instalar via Firebase App Distribution](https://appdistribution.firebase.dev/i/011a10d2381aec34)**
-
-> Alternativa de download direto: [APK no EAS Build](https://expo.dev/accounts/annabonfim/projects/argus-mobile/builds/1090f75e-6b1d-48e0-bf22-f812d1ce1006).
-> A versão publicada corresponde ao commit exibido na tela **Sobre** do app.
 
 ## 👩‍💻 Integrantes
 
