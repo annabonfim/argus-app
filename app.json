@@ -49,6 +49,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "commitHash": "35e1821",
+      "router": {},
+      "eas": {
+        "projectId": "aac8e69a-ad1c-4bc5-ad8e-f43ffee39201"
+      }
     }
   }
 }
